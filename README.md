@@ -2,9 +2,10 @@
 
 It makes your tests cleaner.
 
-This tool is ideal for tests of pure transformations, where a certain input will always produce the same output. Good candidates for this type of testing include: parsing, mapping, converting, and calculating. For example, here is a test that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
+Here is an existing XCTest that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
 
 ```swift
+// Before
 func testExpressibleByStringLiteral() {
   XCTAssertEqual("1", Version(major: 1)),
   XCTAssertEqual("1.0", Version(major: 1)),
@@ -18,6 +19,7 @@ func testExpressibleByStringLiteral() {
 Using TestCleaner, we can clean this up a little without sacrificing Xcode’s ability to highlight lines containing failing tests. We also recommend using a local `typealias` to help reduce line noise:
 
 ```swift
+// After
 func testExpressibleByStringLiteral() {
   typealias V = Version
   assertEqual(testCases: [
@@ -95,3 +97,7 @@ assertCustom(
   }
 )
 ```
+
+## When To Use TestCleaner
+
+This tool is ideal for tests of pure transformations, where a certain input will always produce the same output. Examples include: parsing, mapping, converting, and calculating. It is not intended to be used for integration-style tests, where each assertion is preceded by many lines of setup.
