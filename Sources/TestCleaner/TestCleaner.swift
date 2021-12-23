@@ -190,9 +190,13 @@ public extension XCTestCase {
   func assertCustom<T, U>(
     testCases: [TestPair<T, U>],
     tests: (TestPair<T, U>, _ file: StaticString, _ line: UInt) throws -> Void
-  ) rethrows {
+  ) {
     for testCase in testCases.pairsToTest {
-      try tests(testCase, testCase.file, testCase.line)
+      do {
+        try tests(testCase, testCase.file, testCase.line)
+      } catch {
+        XCTFail("Failed: \(error)", file: testCase.file, line: testCase.line)
+      }
     }
   }
 
