@@ -102,3 +102,7 @@ assertCustom(
 ## When To Use TestCleaner
 
 This tool is ideal for tests of pure transformations, where a certain input will always produce the same output. Examples include: parsing, mapping, converting, and calculating. It is not intended to be used for integration-style tests, where each assertion is preceded by many lines of setup.
+
+## Further Reading
+
+TestCleaner was inspired by a [blog post](https://www.rightpoint.com/rplabs/2019/03/xctest-line-by-line/) which was in turn inspired by a conversation with [Brian King](https://twitter.com/kingofbrian).
