@@ -1,0 +1,97 @@
+# TestCleaner
+
+It makes your tests cleaner.
+
+This tool is ideal for tests of pure transformations, where a certain input will always produce the same output. Good candidates for this type of testing include: parsing, mapping, converting, and calculating. For example, here is a test that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
+
+```swift
+func testExpressibleByStringLiteral() {
+  XCTAssertEqual("1", Version(major: 1)),
+  XCTAssertEqual("1.0", Version(major: 1)),
+  XCTAssertEqual("1.0.0", Version(major: 1)),
+  XCTAssertEqual("1.2", Version(major: 1, minor: 2)),
+  XCTAssertEqual("4.5.6", Version(major: 4, minor: 5, bugfix: 6)),
+  XCTAssertEqual("10.1.88", Version(major: 10, minor: 1, bugfix: 88)),
+}
+```
+
+Using TestCleaner, we can clean this up a little without sacrificing Xcode’s ability to highlight lines containing failing tests. We also recommend using a local `typealias` to help reduce line noise:
+
+```swift
+func testExpressibleByStringLiteral() {
+  typealias V = Version
+  assertEqual(testCases: [
+    Pair("1", V(major: 1)),
+    Pair("1.0", V(major: 1)),
+    Pair("1.0.0", V(major: 1)),
+    Pair("1.2", V(major: 1, minor: 2)),
+    Pair("4.5.6", V(major: 4, minor: 5, bugfix: 6)),
+    Pair("10.1.88", V(major: 10, minor: 1, bugfix: 88)),
+  ])
+}
+```
+
+Now, the assert operation (“equal”) needs to be written in just one place, making the block of tests less error-prone and the intent clearer. It also reduces line length, although the `typealias` is helping there.
+
+## Focus or Skip Tests
+
+Borrowing syntax from [Quick](https://github.com/Quick/Quick), you can focus any test or tests by adding an `f` to the beginning, and only those tests will execute on the next run, allowing you to debug individual cases without having to haphazardly comment and uncomment lines:
+
+```swift
+func testExpressibleByStringLiteral() {
+  typealias V = Version
+  assertEqual(testCases: [
+    Pair("1", V(major: 1)),
+    fPair("1.0", V(major: 1)), // Only this test will run.
+    Pair("1.0.0", V(major: 1)),
+  ]
+}
+```
+
+You can also skip test cases by prepending them with `x`:
+
+```swift
+func testExpressibleByStringLiteral() {
+  typealias V = Version
+  assertEqual(testCases: [
+    Pair("1", V(major: 1)),
+    xPair("1.0", V(major: 1)), // These last two tests will be ignored.
+    xPair("1.0.0", V(major: 1)),
+  ]
+}
+```
+
+These can be combined in a single test for added flexibility: use `xPair` to skip some tests to start with, then focus in on just one to debug it with `fPair`.
+
+## All Available Comparators
+
+TestCleaner mirrors the full range of XCTAssert functions available:
+
+- Boolean (true/false)
+- LessThan `<`
+- GreaterThan `>`
+- LessThanOrEqual `<=`
+- GreaterThanOrEqual `>=`
+- Equal `==`
+- Equal (with floating-point accuracy) `==`
+- NotEqual `!=`
+- NotEqual (with floating-point accuracy) `!=`
+
+## Custom Assertions
+
+If you have a custom assertion function, you can use the `assertCustom` function to use it with TestCleaner. Just make sure your custom assertion takes `file: StaticString` and `line: UInt` parameters, and forward the ones that the `tests` closure in `assertCustom` passes to you.
+
+```swift
+assertCustom(
+  testCases: [
+    Pair(someLeftValue, someRightValue),
+    Pair(anotherLeftValue, anotherRightValue),
+  ],
+  tests: { pair, file, line in
+    myCustomAssertion(
+      pair.left, pair.right,
+      file: file, line: line // <-- ⚠️ this is important!
+    )
+  }
+)
+```
