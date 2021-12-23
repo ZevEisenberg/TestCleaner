@@ -81,7 +81,7 @@ TestCleaner mirrors the full range of XCTAssert functions available:
 
 ## Custom Assertions
 
-If you have a custom assertion function, you can use the `assertCustom` function to use it with TestCleaner. Just make sure your custom assertion takes `file: StaticString` and `line: UInt` parameters, and forward the ones that the `tests` closure in `assertCustom` passes to you.
+If you have a custom assertion function, you can use the `assertCustom` function to use it with TestCleaner. Just make sure your custom assertion takes `file: StaticString, line: UInt` parameters, and forward the ones that the `tests` closure in `assertCustom` passes to you.
 
 ```swift
 assertCustom(
