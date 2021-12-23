@@ -94,6 +94,7 @@ assertCustom(
       pair.left, pair.right,
       file: file, line: line // <-- ⚠️ this is important!
     )
+    try youCanAlsoThrowErrorsInHere() // They will also get attributed to the correct line.
   }
 )
 ```
