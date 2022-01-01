@@ -2,6 +2,8 @@
 
 It makes your tests cleaner.
 
+<img src="TestCleaner.png" width=200 />
+
 Here is an existing XCTest that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
 
 ```swift
@@ -106,3 +108,5 @@ This tool is ideal for tests of pure transformations, where a certain input will
 ## Further Reading
 
 TestCleaner was inspired by a [blog post](https://www.rightpoint.com/rplabs/2019/03/xctest-line-by-line/) which was in turn inspired by a conversation with [Brian King](https://twitter.com/kingofbrian).
+
+The spray bottle image was made using Blender, and the project file is hosted at [ZevEisenberg/TestCleanerIcon](https://github.com/ZevEisenberg/TestCleanerIcon.git).
