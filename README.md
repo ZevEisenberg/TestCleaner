@@ -39,7 +39,7 @@ Now, the assert operation (“equal”) needs to be written in just one place, m
 
 ## Focus or Skip Tests
 
-Borrowing syntax from [Quick](https://github.com/Quick/Quick), you can focus any test or tests by adding an `f` to the beginning, and only those tests will execute on the next run, allowing you to debug individual cases without having to haphazardly comment and uncomment lines:
+Borrowing syntax from [Quick](https://github.com/Quick/Quick), you can focus any tests by adding an `f` to the beginning, and only those tests will execute on the next run, allowing you to debug individual cases without having to haphazardly comment and uncomment lines:
 
 ```swift
 func testExpressibleByStringLiteral() {
