@@ -90,5 +90,40 @@ final class TestCleanerTests: XCTestCase {
     ], tests: { pair, file, line in
       XCTAssertEqual(pair.left.count, pair.right.count, file: file, line: line)
     })
+
+    func testLazyEvaluationForExclusion() {
+
+      var calledInputs: [Int] = []
+
+      func square(_ value: Int) -> Int {
+        calledInputs.append(value)
+        return value * value
+      }
+
+      assertEqual(testCases: [
+        Pair(square(1), 1),
+        xPair(square(2), 4),
+        Pair(square(7), 49),
+      ])
+
+      XCTAssertEqual(calledInputs, [1, 7])
+    }
+
+    func testLazyEvaluationForInclusion() {
+      var calledInputs: [Int] = []
+
+      func square(_ value: Int) -> Int {
+        calledInputs.append(value)
+        return value * value
+      }
+
+      assertEqual(testCases: [
+        fPair(square(1), 1),
+        fPair(square(2), 4),
+        Pair(square(7), 49),
+      ])
+
+      XCTAssertEqual(calledInputs, [1, 2])
+    }
   }
 }
