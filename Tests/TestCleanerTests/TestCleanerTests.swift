@@ -125,5 +125,41 @@ final class TestCleanerTests: XCTestCase {
 
       XCTAssertEqual(calledInputs, [1, 2])
     }
+
+    func testMessageLaziness_Pair() {
+      var callCount = 0
+      func makeMessage() -> String {
+        callCount += 1
+        return "the message"
+      }
+      let pair = Pair(1, 2, makeMessage())
+      XCTAssertEqual(callCount, 0)
+      XCTAssertEqual(pair.message, "the message")
+      XCTAssertEqual(callCount, 1)
+    }
+
+    func testMessageLaziness_fPair() {
+      var callCount = 0
+      func makeMessage() -> String {
+        callCount += 1
+        return "the message"
+      }
+      let pair = fPair(1, 2, makeMessage())
+      XCTAssertEqual(callCount, 0)
+      XCTAssertEqual(pair.message, "the message")
+      XCTAssertEqual(callCount, 1)
+    }
+
+    func testMessageLaziness_xPair() {
+      var callCount = 0
+      func makeMessage() -> String {
+        callCount += 1
+        return "the message"
+      }
+      let pair = xPair(1, 2, makeMessage())
+      XCTAssertEqual(callCount, 0)
+      XCTAssertEqual(pair.message, "the message")
+      XCTAssertEqual(callCount, 1)
+    }
   }
 }

@@ -22,6 +22,9 @@ public extension XCTestCase {
     /// The right-hand value in the pair. Might represent the expected value in a test, or the right-hand side of a comparison expression.
     let rightClosure: () -> Right
 
+    /// An optional description of the failure.
+    let messageClosure: () -> String
+
     /// The file in which the `TestPair` was initialized.
     let file: StaticString
 
@@ -31,12 +34,19 @@ public extension XCTestCase {
     /// The involvement of this `TestPair`.
     public let involvement: involvement?
 
+    /// The left-hand value in the pair. Might represent the observed value in a test, or the left-hand side of a comparison expression.
     public var left: Left {
       leftClosure()
     }
 
+    /// The right-hand value in the pair. Might represent the expected value in a test, or the right-hand side of a comparison expression.
     public var right: Right {
       rightClosure()
+    }
+
+    /// An optional description of the failure.
+    public var message: String {
+      messageClosure()
     }
 
     /// Initializes a new `TestPair`, capturing the file and line information for use in `XCTest` methods.
@@ -44,18 +54,21 @@ public extension XCTestCase {
     ///   - left: a closure that generates the left-hand value.
     ///   - right: the closure that generates the right-hand value.
     ///   - involvement: the involvement of this test pair.
+    ///   - message: an optional description of the failure.
     ///   - file: the file in which the `TestPair` was initialized.
     ///   - line: the line in which the `TestPair` was initialized.
-      init(
-        _ left: @escaping () -> Left,
-        _ right: @escaping () -> Right,
-        involvement: involvement?,
-        file: StaticString = #filePath,
-        line: UInt = #line
-      ) {
+    init(
+      _ left: @escaping () -> Left,
+      _ right: @escaping () -> Right,
+      involvement: involvement?,
+      message: @escaping () -> String,
+      file: StaticString = #filePath,
+      line: UInt = #line
+    ) {
       self.leftClosure = left
       self.rightClosure = right
       self.involvement = involvement
+      self.messageClosure = message
       self.file = file
       self.line = line
     }
@@ -71,30 +84,33 @@ public extension XCTestCase {
   func Pair<Left, Right>(
     _ left: @autoclosure @escaping () -> Left,
     _ right: @autoclosure @escaping () -> Right,
+    _ message: @autoclosure @escaping () -> String = "",
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, involvement: nil, file: file, line: line)
+    TestPair(left, right, involvement: nil, message: message, file: file, line: line)
   }
 
   /// Creates a test pair that is skipped when running the enclosing test.
   func xPair<Left, Right>(
     _ left: @autoclosure @escaping () -> Left,
     _ right: @autoclosure @escaping () -> Right,
+    _ message: @autoclosure @escaping () -> String = "",
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, involvement: .excluded, file: file, line: line)
+    TestPair(left, right, involvement: .excluded, message: message, file: file, line: line)
   }
 
   /// Creates a test pair that is always run when the enclosing test is run. Causes any non-focused pairs to be skipped. If a test contains multiple focused pairs, they will all be run.
   func fPair<Left, Right>(
     _ left: @autoclosure @escaping () -> Left,
     _ right: @autoclosure @escaping () -> Right,
+    _ message: @autoclosure @escaping () -> String = "",
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, involvement: .focused, file: file, line: line)
+    TestPair(left, right, involvement: .focused, message: message, file: file, line: line)
   }
 
 }
@@ -106,9 +122,19 @@ public extension XCTestCase {
   func assertBoolean(testCases: [TestPair<Bool, Bool>]) {
     for testCase in testCases.pairsToTest {
       if testCase.rightClosure() {
-        XCTAssertTrue(testCase.leftClosure(), file: testCase.file, line: testCase.line)
+        XCTAssertTrue(
+          testCase.leftClosure(),
+          testCase.message,
+          file: testCase.file,
+          line: testCase.line
+        )
       } else {
-        XCTAssertFalse(testCase.leftClosure(), file: testCase.file, line: testCase.line)
+        XCTAssertFalse(
+          testCase.leftClosure(),
+          testCase.message,
+          file: testCase.file,
+          line: testCase.line
+        )
       }
     }
   }
@@ -117,7 +143,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the value it is expected to be less than on the right.
   func assertLessThan<T: Comparable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertLessThan(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertLessThan(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -125,7 +157,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the value it is expected to be greater than on the right.
   func assertGreaterThan<T: Comparable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertGreaterThan(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertGreaterThan(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -133,7 +171,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the value it is expected to be less than or equal to on the right.
   func assertLessThanOrEqual<T: Comparable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertLessThanOrEqual(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertLessThanOrEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -141,7 +185,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the value it is expected to be greater than or equal to on the right.
   func assertGreaterThanOrEqual<T: Comparable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertGreaterThanOrEqual(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertGreaterThanOrEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -149,7 +199,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the expected value on the right.
   func assertEqual<T: Equatable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertEqual(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -158,7 +214,14 @@ public extension XCTestCase {
   /// - Parameter accuracy: An expression of type `T`, where T conforms to `FloatingPoint`. This parameter describes the maximum difference between the test and control values for these values to be considered equal.
   func assertEqual<T: FloatingPoint>(testCases: [TestPair<T, T>], accuracy: T) {
     for testCase in testCases.pairsToTest {
-      XCTAssertEqual(testCase.leftClosure(), testCase.rightClosure(), accuracy: accuracy, file: testCase.file, line: testCase.line)
+      XCTAssertEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        accuracy: accuracy,
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -166,7 +229,13 @@ public extension XCTestCase {
   /// - Parameter testCases: the cases to test, with the test value on the left and the expected unequal value on the right.
   func assertNotEqual<T: Equatable>(testCases: [TestPair<T, T>]) {
     for testCase in testCases.pairsToTest {
-      XCTAssertNotEqual(testCase.leftClosure(), testCase.rightClosure(), file: testCase.file, line: testCase.line)
+      XCTAssertNotEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -175,7 +244,14 @@ public extension XCTestCase {
   /// - Parameter accuracy: An expression of type `T`, where T conforms to `FloatingPoint`. This parameter describes the maximum difference between the test and control values for these values to be considered not equal.
   func assertNotEqual<T: FloatingPoint>(testCases: [TestPair<T, T>], accuracy: T) {
     for testCase in testCases.pairsToTest {
-      XCTAssertNotEqual(testCase.leftClosure(), testCase.rightClosure(), accuracy: accuracy, file: testCase.file, line: testCase.line)
+      XCTAssertNotEqual(
+        testCase.leftClosure(),
+        testCase.rightClosure(),
+        accuracy: accuracy,
+        testCase.message,
+        file: testCase.file,
+        line: testCase.line
+      )
     }
   }
 
@@ -195,8 +271,10 @@ public extension XCTestCase {
      tests: { pair, file, line in
        myCustomAssertion(
          pair.left, pair.right,
-         file: file, line: line // <-- ⚠️ this is important!
+         message: pair.message,
+         file: file, line: line // <-- ⚠️ file and line are important!
        )
+       try youCanAlsoThrowErrorsInHere() // They will also get attributed to the correct line.
      }
    )
    ```
@@ -209,7 +287,7 @@ public extension XCTestCase {
       do {
         try tests(testCase, testCase.file, testCase.line)
       } catch {
-        XCTFail("Failed: \(error)", file: testCase.file, line: testCase.line)
+        XCTFail("Failed: '\(error)' for test case '\(testCase.message)'", file: testCase.file, line: testCase.line)
       }
     }
   }

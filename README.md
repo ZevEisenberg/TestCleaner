@@ -94,6 +94,7 @@ assertCustom(
   tests: { pair, file, line in
     myCustomAssertion(
       pair.left, pair.right,
+      message: pair.message,
       file: file, line: line // <-- ⚠️ this is important!
     )
     try youCanAlsoThrowErrorsInHere() // They will also get attributed to the correct line.
