@@ -17,6 +17,13 @@ let package = Package(
     targets: [
         .target(
             name: "TestCleaner",
-            dependencies: []),
+            dependencies: []
+        ),
+        .testTarget(
+            name: "TestCleanerTests", // Yo, Dawg
+            dependencies: [
+                "TestCleaner",
+            ]
+        ),
     ]
 )

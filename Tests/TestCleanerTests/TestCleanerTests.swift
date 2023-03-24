@@ -1,0 +1,94 @@
+import TestCleaner
+import XCTest
+
+final class TestCleanerTests: XCTestCase {
+  func testAssertBoolean() {
+    assertBoolean(testCases: [
+      Pair(true, true),
+      Pair(false, false),
+      xPair(false, true),
+      xPair(true, false),
+    ])
+  }
+
+  func testAssertLessThan() {
+    assertLessThan(testCases: [
+      Pair(1, 2),
+      Pair(-1, 3.6),
+      xPair(10, 0),
+      xPair(10, 10),
+    ])
+  }
+
+  func testAssertGreaterThan() {
+    assertGreaterThan(testCases: [
+      Pair(2, 1),
+      Pair(3.6, -1),
+      xPair(0, 10),
+      xPair(10, 10),
+    ])
+  }
+
+  func testAssertLessThanOrEqual() {
+    assertLessThanOrEqual(testCases: [
+      Pair(1, 2),
+      Pair(-1, 3.6),
+      Pair(100, 100),
+      xPair(10, 0),
+      xPair(10, 10),
+    ])
+  }
+
+  func testAssertGreaterThanOrEqual() {
+    assertGreaterThanOrEqual(testCases: [
+      Pair(2, 1),
+      Pair(3.6, -1),
+      Pair(100, 100),
+      xPair(0, 10),
+      xPair(10, 10),
+    ])
+  }
+
+  func testAssertEqual() {
+    assertEqual(testCases: [
+      Pair("Hello", "Hello"),
+      Pair("", ""),
+      xPair("a", "b"),
+    ])
+  }
+
+  func testAssertEqualWithAccuracy() {
+    assertEqual(testCases: [
+      Pair(1, 1.098),
+      Pair(1, 0.98),
+      Pair(2, 2.05),
+      xPair(3, 3.11),
+    ], accuracy: 0.1)
+  }
+
+  func testAssertNotEqual() {
+    assertNotEqual(testCases: [
+      Pair("Hello", "Aloha"),
+      Pair("", "\n"),
+      xPair("a", "a"),
+    ])
+  }
+
+  func testAssertNotEqualWithAccuracy() {
+    assertNotEqual(testCases: [
+      Pair(1, 1.101),
+      Pair(2, 1.8),
+      xPair(3, 3),
+    ], accuracy: 0.1)
+  }
+
+  func testAssertCustom() {
+    // Assert that certain strings have the same count
+    assertCustom(testCases: [
+      Pair("One", "Two"),
+      xPair("Three", "Four"),
+    ], tests: { pair, file, line in
+      XCTAssertEqual(pair.left.count, pair.right.count, file: file, line: line)
+    })
+  }
+}
