@@ -5,7 +5,7 @@ import XCTest
 public extension XCTestCase {
 
   /// Whether a test pair is excluded or focused in a test run.
-  enum Affinity {
+  enum involvement {
     /// This test pair is excluded, and will not be evaluated when the test is run
     case excluded
 
@@ -28,20 +28,26 @@ public extension XCTestCase {
     /// The line on which the `TestPair` was initialized.
     let line: UInt
 
-    /// The affinity of this `TestPair`.
-    public let affinity: Affinity?
+    /// The involvement of this `TestPair`.
+    public let involvement: involvement?
 
     /// Initializes a new `TestPair`, capturing the file and line information for use in `XCTest` methods.
     /// - Parameters:
     ///   - left: the left-hand value.
     ///   - right: the right-hand value.
-    ///   - affinity: the affinity of this test pair.
+    ///   - involvement: the involvement of this test pair.
     ///   - file: the file in which the `TestPair` was initialized.
     ///   - line: the line in which the `TestPair` was initialized.
-    init(_ left: Left, _ right: Right, affinity: Affinity?, file: StaticString = #filePath, line: UInt = #line) {
+      init(
+        _ left: Left,
+        _ right: Right,
+        involvement: involvement?,
+        file: StaticString = #filePath,
+        line: UInt = #line
+      ) {
       self.left = left
       self.right = right
-      self.affinity = affinity
+      self.involvement = involvement
       self.file = file
       self.line = line
     }
@@ -60,7 +66,7 @@ public extension XCTestCase {
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, affinity: nil, file: file, line: line)
+    TestPair(left, right, involvement: nil, file: file, line: line)
   }
 
   /// Creates a test pair that is skipped when running the enclosing test.
@@ -70,7 +76,7 @@ public extension XCTestCase {
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, affinity: .excluded, file: file, line: line)
+    TestPair(left, right, involvement: .excluded, file: file, line: line)
   }
 
   /// Creates a test pair that is always run when the enclosing test is run. Causes any non-focused pairs to be skipped. If a test contains multiple focused pairs, they will all be run.
@@ -80,7 +86,7 @@ public extension XCTestCase {
     file: StaticString = #filePath,
     line: UInt = #line
   ) -> TestPair<Left, Right> {
-    TestPair(left, right, affinity: .focused, file: file, line: line)
+    TestPair(left, right, involvement: .focused, file: file, line: line)
   }
 
 }
@@ -203,21 +209,21 @@ public extension XCTestCase {
 }
 
 /// Describes a type that can express its preference for being focused or skipped during testing.
-public protocol HasTestAffinity {
+public protocol HasTestInvolvement {
   /// The type's preference for being focused or skipped during testing.
-  var affinity: XCTestCase.Affinity? { get }
+  var involvement: XCTestCase.involvement? { get }
 }
 
-extension XCTestCase.TestPair: HasTestAffinity {}
+extension XCTestCase.TestPair: HasTestInvolvement {}
 
-public extension Sequence where Element: HasTestAffinity {
+public extension Sequence where Element: HasTestInvolvement {
 
-  /// The filtered list of test pairs to use during testing. Takes test affinity into account, skipping any `xPair` tests, or skipping all non-focused pairs if any `fPair` tests are present.
+  /// The filtered list of test pairs to use during testing. Takes test involvement into account, skipping any `xPair` tests, or skipping all non-focused pairs if any `fPair` tests are present.
   var pairsToTest: [Element] {
-    if self.contains(where: { $0.affinity == .focused }) {
-      return filter { $0.affinity == .focused }
+    if self.contains(where: { $0.involvement == .focused }) {
+      return filter { $0.involvement == .focused }
     }
-    return filter { $0.affinity != .excluded }
+    return filter { $0.involvement != .excluded }
   }
 
 }
