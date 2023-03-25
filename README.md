@@ -1,5 +1,7 @@
 # TestCleaner
 
+Tidy up repetitive XCTests by removing boilerplate so you can focus on each test’s inputs and outputs.
+
 <img alt="a photo-real 3D render of a fancy spray bottle. The label says TEST CLEANER and has artwork reminiscent of the Xcode icons for passing and failing tests." src="TestCleaner.png" width=200 />
 
 Here is an existing XCTest that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
