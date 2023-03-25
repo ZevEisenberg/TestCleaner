@@ -1,7 +1,5 @@
 # TestCleaner
 
-It makes your tests cleaner.
-
 <img src="TestCleaner.png" width=200 />
 
 Here is an existing XCTest that confirms that a `Version` type’s `ExpressibleByStringLiteral` is working by comparing the results to known good values:
