@@ -97,7 +97,7 @@ assertCustom(
   ],
   tests: { pair, file, line in
     myCustomAssertion(
-      pair.left, pair.right,
+      try pair.left, try pair.right,
       message: pair.message,
       file: file, line: line // <-- ⚠️ this is important!
     )

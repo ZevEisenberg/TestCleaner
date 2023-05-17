@@ -88,7 +88,7 @@ final class TestCleanerTests: XCTestCase {
       Pair("One", "Two"),
       xPair("Three", "Four"),
     ], tests: { pair, file, line in
-      XCTAssertEqual(pair.left.count, pair.right.count, file: file, line: line)
+      XCTAssertEqual(try pair.left.count, try pair.right.count, file: file, line: line)
     })
 
     func testLazyEvaluationForExclusion() {
