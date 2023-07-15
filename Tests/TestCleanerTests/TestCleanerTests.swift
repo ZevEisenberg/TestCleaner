@@ -90,76 +90,76 @@ final class TestCleanerTests: XCTestCase {
     ], tests: { pair, file, line in
       XCTAssertEqual(try pair.left.count, try pair.right.count, file: file, line: line)
     })
+  }
 
-    func testLazyEvaluationForExclusion() {
+  func testLazyEvaluationForExclusion() {
 
-      var calledInputs: [Int] = []
+    var calledInputs: [Int] = []
 
-      func square(_ value: Int) -> Int {
-        calledInputs.append(value)
-        return value * value
-      }
-
-      assertEqual(testCases: [
-        Pair(square(1), 1),
-        xPair(square(2), 4),
-        Pair(square(7), 49),
-      ])
-
-      XCTAssertEqual(calledInputs, [1, 7])
+    func square(_ value: Int) -> Int {
+      calledInputs.append(value)
+      return value * value
     }
 
-    func testLazyEvaluationForInclusion() {
-      var calledInputs: [Int] = []
+    assertEqual(testCases: [
+      Pair(square(1), 1),
+      xPair(square(2), 4),
+      Pair(square(7), 49),
+    ])
 
-      func square(_ value: Int) -> Int {
-        calledInputs.append(value)
-        return value * value
-      }
+    XCTAssertEqual(calledInputs, [1, 7])
+  }
 
-      assertEqual(testCases: [
-        fPair(square(1), 1),
-        fPair(square(2), 4),
-        Pair(square(7), 49),
-      ])
+  func testLazyEvaluationForInclusion() {
+    var calledInputs: [Int] = []
 
-      XCTAssertEqual(calledInputs, [1, 2])
+    func square(_ value: Int) -> Int {
+      calledInputs.append(value)
+      return value * value
     }
 
-    func testMessageLaziness_Pair() {
-      var callCount = 0
-      func makeMessage() -> String {
-        callCount += 1
-        return "the message"
-      }
-      let pair = Pair(1, 2, makeMessage())
-      XCTAssertEqual(callCount, 0)
-      XCTAssertEqual(pair.message, "the message")
-      XCTAssertEqual(callCount, 1)
-    }
+    assertEqual(testCases: [
+      fPair(square(1), 1),
+      fPair(square(2), 4),
+      Pair(square(7), 49),
+    ])
 
-    func testMessageLaziness_fPair() {
-      var callCount = 0
-      func makeMessage() -> String {
-        callCount += 1
-        return "the message"
-      }
-      let pair = fPair(1, 2, makeMessage())
-      XCTAssertEqual(callCount, 0)
-      XCTAssertEqual(pair.message, "the message")
-      XCTAssertEqual(callCount, 1)
-    }
+    XCTAssertEqual(calledInputs, [1, 2])
+  }
 
-    func testMessageLaziness_xPair() {
-      var callCount = 0
-      func makeMessage() -> String {
-        callCount += 1
-        return "the message"
-      }
-      let pair = xPair(1, 2, makeMessage())
-      XCTAssertEqual(callCount, 0)
-      XCTAssertEqual(pair.message, "the message")
-      XCTAssertEqual(callCount, 1)
+  func testMessageLaziness_Pair() {
+    var callCount = 0
+    func makeMessage() -> String {
+      callCount += 1
+      return "the message"
     }
+    let pair = Pair(1, 2, makeMessage())
+    XCTAssertEqual(callCount, 0)
+    XCTAssertEqual(pair.message, "the message")
+    XCTAssertEqual(callCount, 1)
+  }
+
+  func testMessageLaziness_fPair() {
+    var callCount = 0
+    func makeMessage() -> String {
+      callCount += 1
+      return "the message"
+    }
+    let pair = fPair(1, 2, makeMessage())
+    XCTAssertEqual(callCount, 0)
+    XCTAssertEqual(pair.message, "the message")
+    XCTAssertEqual(callCount, 1)
+  }
+
+  func testMessageLaziness_xPair() {
+    var callCount = 0
+    func makeMessage() -> String {
+      callCount += 1
+      return "the message"
+    }
+    let pair = xPair(1, 2, makeMessage())
+    XCTAssertEqual(callCount, 0)
+    XCTAssertEqual(pair.message, "the message")
+    XCTAssertEqual(callCount, 1)
   }
 }
