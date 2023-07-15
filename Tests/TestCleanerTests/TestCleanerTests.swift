@@ -1,6 +1,12 @@
 import TestCleaner
 import XCTest
 
+struct ShouldNever: Error {
+  init() {
+    XCTFail("We should never construct this error during a successful test run")
+  }
+}
+
 final class TestCleanerTests: XCTestCase {
   func testAssertBoolean() {
     assertBoolean(testCases: [
@@ -8,6 +14,22 @@ final class TestCleanerTests: XCTestCase {
       Pair(false, false),
       xPair(false, true),
       xPair(true, false),
+    ])
+  }
+
+  func testAssertBoolean_throws() {
+    func doThrowingThing(andReturn result: Bool, throw: Bool = false) throws -> Bool {
+      if `throw` {
+        throw ShouldNever()
+      }
+      return result
+    }
+    assertBoolean(testCases: [
+      Pair(try doThrowingThing(andReturn: true), try doThrowingThing(andReturn: true)),
+      //       ^ error here...                       ^ ...and here
+      Pair(try doThrowingThing(andReturn: false), try doThrowingThing(andReturn: false)),
+      xPair(try doThrowingThing(andReturn: false, throw: true), try doThrowingThing(andReturn: true, throw: true)),
+      xPair(try doThrowingThing(andReturn: true, throw: true), try doThrowingThing(andReturn: false, throw: true)),
     ])
   }
 
