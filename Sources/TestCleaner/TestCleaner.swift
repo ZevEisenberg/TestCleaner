@@ -5,7 +5,7 @@ import XCTest
 public extension XCTestCase {
 
   /// Whether a test pair is excluded or focused in a test run.
-  enum involvement {
+  enum Involvement {
     /// This test pair is excluded, and will not be evaluated when the test is run
     case excluded
 
@@ -32,7 +32,7 @@ public extension XCTestCase {
     let line: UInt
 
     /// The involvement of this `TestPair`.
-    public let involvement: involvement?
+    public let involvement: Involvement?
 
     /// The left-hand value in the pair. Might represent the observed value in a test, or the left-hand side of a comparison expression.
     public var left: Left {
@@ -64,7 +64,7 @@ public extension XCTestCase {
     init(
       _ left: @escaping () throws -> Left,
       _ right: @escaping () throws -> Right,
-      involvement: involvement?,
+      involvement: Involvement?,
       message: @escaping () -> String,
       file: StaticString = #filePath,
       line: UInt = #line
@@ -305,7 +305,7 @@ public extension XCTestCase {
 /// Describes a type that can express its preference for being focused or skipped during testing.
 public protocol HasTestInvolvement {
   /// The type's preference for being focused or skipped during testing.
-  var involvement: XCTestCase.involvement? { get }
+  var involvement: XCTestCase.Involvement? { get }
 }
 
 extension XCTestCase.TestPair: HasTestInvolvement {}
