@@ -52,7 +52,7 @@ func testExpressibleByStringLiteral() {
     Pair("1", V(major: 1)),
     fPair("1.0", V(major: 1)), // Only this test will run.
     Pair("1.0.0", V(major: 1)),
-  ]
+  ])
 }
 ```
 
@@ -65,7 +65,7 @@ func testExpressibleByStringLiteral() {
     Pair("1", V(major: 1)),
     xPair("1.0", V(major: 1)), // These last two tests will be ignored.
     xPair("1.0.0", V(major: 1)),
-  ]
+  ])
 }
 ```
 
